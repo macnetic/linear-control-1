@@ -14,27 +14,34 @@ T.Properties.VariableNames = {'t' 'u_l' 'u_r' 'i_l' 'i_r'...
 T.Properties.VariableUnits = {'s' 'V' 'V' 'A' 'A'...
     'm/s' 'm/s' 'm' 'm' 'rad' 'rad'};
 
-%% Plot
+%% Preprocessing
+% Remove rows with missing data
+T = rmmissing(T);
 
-% Create folder for storing the figures in
-if ~isfolder('figures')
-    mkdir('figures');
+% Remove rows where the time does not appear in order
+i = 2;
+while i < height(T)
+    isBetween = (T.t(i-1) < T.t(i)) && (T.t(i) < T.t(i+1));
+    if ~isBetween
+        T(i,:) = [];
+    end
+    i = i+1;
 end
 
+%% Plot
 % Plot recorded path
-figure('Name','Recorded path driven');
+pathplot = figure('Name','Recorded path driven');
 hold on;
 grid on;
 plot(T.x,T.y);
-text(T.x(1)-0.1, T.y(1)-0.05, ['t = ' num2str(T.t(1))]);
-text(T.x(end)-0.1, T.y(end)-0.05, ['t = ' num2str(T.t(end))]);
+text(T.x(1)-0.15, T.y(1)-0.05, ['t = ' num2str(T.t(1)) ' s']);
+text(T.x(end)-0.15, T.y(end)-0.05, ['t = ' num2str(T.t(end)) ' s']);
 hold off;
 xlabel('x [m]');
-xlabel('y [m]');
-saveas(gcf(),'figures/path','epsc');
+ylabel('y [m]');
 
 % Plot motor voltage vs. time
-figure('Name', 'Motor voltages vs. time');
+voltageplot = figure('Name', 'Motor voltages vs. time');
 hold on;
 grid on;
 plot(T.t,T.u_l);
@@ -43,10 +50,9 @@ hold off
 xlabel('time [s]');
 ylabel('Motor voltage [V]');
 legend('Left motor', 'Right motor', 'Location', 'best');
-saveas(gcf(),'figures/motor-voltage','epsc');
 
 % Plot motor current vs. time
-figure('Name', 'Motor currents vs. time');
+currentplot = figure('Name', 'Motor currents vs. time');
 hold on;
 grid on;
 plot(T.t,T.i_l);
@@ -55,10 +61,9 @@ hold off
 xlabel('time [s]');
 ylabel('Motor current [A]');
 legend('Left motor', 'Right motor', 'Location', 'best');
-saveas(gcf(),'figures/motor-current','epsc');
 
 % Plot wheel velocities vs. time
-figure('Name', 'Wheel velocities vs. time');
+wheelplot = figure('Name', 'Wheel velocities vs. time');
 hold on;
 grid on;
 plot(T.t,T.v_l);
@@ -67,10 +72,9 @@ hold off
 xlabel('time [s]');
 ylabel('Wheel velocity [m/s]');
 legend('Left wheel', 'Right wheel', 'Location', 'best');
-saveas(gcf(),'figures/wheel-velocity','epsc');
 
 % Plot heading vs. time
-figure('Name', 'Heading vs. time');
+headingplot = figure('Name', 'Heading vs. time');
 hold on;
 grid on;
 plot(T.t,T.h);
@@ -80,9 +84,8 @@ yticks(-pi:pi/2:pi);
 yticklabels({'-\pi' '-\pi/2' '0' '\pi/2' '\pi'});
 xlabel('time [s]');
 ylabel('Heading [rad]');
-saveas(gcf(),'figures/heading','epsc');
 
-figure('Name', 'Tilt angle vs. time');
+tiltplot = figure('Name', 'Tilt angle vs. time');
 hold on;
 grid on;
 plot(T.t,T.tilt);
@@ -92,4 +95,17 @@ yticks(-pi:pi/2:pi);
 yticklabels({'-\pi' '-\pi/2' '0' '\pi/2' '\pi'});
 xlabel('time [s]');
 ylabel('Tilt angle [rad]');
-saveas(gcf(),'figures/tilt','epsc');
+
+%% Save plots
+% Create folder for storing the figures in
+if ~isfolder('figures')
+    mkdir('figures');
+end
+
+% Save plots to folder
+saveas(pathplot,'figures/path','epsc');
+saveas(voltageplot,'figures/motor-voltage','epsc');
+saveas(currentplot,'figures/motor-current','epsc');
+saveas(wheelplot,'figures/wheel-velocity','epsc');
+saveas(headingplot,'figures/heading','epsc');
+saveas(tiltplot,'figures/tilt','epsc');
