@@ -5,3 +5,21 @@
 
 */figures/
 *.asv
+
+opg6/slprj/
+
+*.png
+
+*.eps
+
+*.fig
+
+*.pdf
+
+*.autosave
+
+*.slxc
+
+opg6/wheelsdown_sim_html_files/
+
+*.html
