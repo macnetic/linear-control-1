@@ -23,7 +23,7 @@ t_step = 0.5;
 
 %% Preprocessing
 % Refactored the previously used preprocessing code into separate function
-% wheelsdown = preprocess(wheelsdown);
+wheelsdown = preprocess(wheelsdown);
 
 % Remove obvious outliers from data
 [ans, mask] = rmoutliers(wheelsdown, 'movmedian', 20);

@@ -1,0 +1,4 @@
+thread=1
+  bal=1, vel=0, log=10 : time=2
+  vel=0.2 : time=2
+  vel=0.7 : time=5, log=0
